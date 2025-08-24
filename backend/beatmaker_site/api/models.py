@@ -50,6 +50,7 @@ class Music_video(models.Model):
 class Beat(models.Model):
     title = models.CharField(max_length=255)
     beat_url = models.URLField(blank=True)
+    thumbnail_url = models.URLField(blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -118,3 +118,24 @@ class BeatViewSetTest(BaseAPITest):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Beat.objects.count(), 1)
         self.assertEqual(Beat.objects.first().created_by, self.admin)
+
+class SongLatestTest(BaseAPITest):
+    def test_latest_song_returns_most_recent(self):
+        song1 = Song.objects.create(
+            title="Old Song",
+            cover_img="https://example.com/cover1.jpg",
+            created_by=self.admin
+        )
+        song2 = Song.objects.create(
+            title="New Song",
+            cover_img="https://example.com/cover2.jpg",
+            created_by=self.admin
+        )
+        response = self.client.get("/api/songs/latest/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], song2.title)
+
+    def test_latest_song_returns_404_if_none_exist(self):
+        response = self.client.get("/api/songs/latest/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+

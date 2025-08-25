@@ -35,6 +35,8 @@ class Song(Model):
         verbose_name = 'Song'
         verbose_name_plural = 'Songs'
         ordering =["-created_at"]
+        get_latest_by = "created_at" 
+        
     title = models.CharField(max_length=255)
     spotify = models.URLField(blank=True)
     boomplay = models.URLField(blank=True)
@@ -49,8 +51,9 @@ class Song(Model):
     def __str__(self):
         return f"{self.title}"
     
+    @classmethod
     def latest_song(cls):
-        return cls.objects.latest('created_at')
+        return cls.objects.latest()
 
 class Music_video(Model):
     class Meta:

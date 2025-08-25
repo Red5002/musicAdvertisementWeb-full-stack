@@ -3,6 +3,9 @@ from rest_framework import viewsets
 from .models import *
 from .serializers import * 
 from .permissions import *
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 
 
 
@@ -21,6 +24,18 @@ class SongViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(created_by = self.request.user)
+
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest(self, request):
+        try:
+            song = Song.latest_song()
+            serializer = self.get_serializer(song)
+            return Response(serializer.data)
+        except Song.DoesNotExist:
+            return Response(
+                {"detail": "No songs available."},
+                status=status.HTTP_404_NOT_FOUND
+            )    
 
 class MusicVideoViewSet(viewsets.ModelViewSet):
     queryset = Music_video.objects.all().order_by('-created_at')

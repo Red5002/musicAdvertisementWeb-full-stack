@@ -139,3 +139,46 @@ class SongLatestTest(BaseAPITest):
         response = self.client.get("/api/songs/latest/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+class MusicVideoLatestTest(BaseAPITest):
+    def test_latest_video_returns_most_recent(self):
+        video1 = Music_video.objects.create(
+            title="Old video",
+            youtube_url="https://example.com/video1.mp4",
+            created_by=self.admin
+        )
+        video2 = Music_video.objects.create(
+            title="New video",
+            youtube_url="https://example.com/video2.mp4",
+            created_by=self.admin
+        )
+        response = self.client.get("/api/videos/latest/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], video2.title)
+
+    def test_latest_video_returns_404_if_none_exist(self):
+        response = self.client.get("/api/videos/latest/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class BeatLatestTest(BaseAPITest):
+    def test_latest_beat_returns_most_recent(self):
+        beat1 = Beat.objects.create(
+            title="Old beat",
+            beat_url="https://example-beat.com/beat1.mp3",
+            thumbnail_url="https://example.com/cover1.jpg",
+            created_by=self.admin
+        )
+        beat2 = Beat.objects.create(
+            title="New beat",
+            beat_url="https://example-beat.com/beat2.mp3",
+            thumbnail_url="https://example.com/cover2.jpg",
+            created_by=self.admin
+        )
+        response = self.client.get("/api/beats/latest/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], beat2.title)
+
+    def test_latest_beat_returns_404_if_none_exist(self):
+        response = self.client.get("/api/beats/latest/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+

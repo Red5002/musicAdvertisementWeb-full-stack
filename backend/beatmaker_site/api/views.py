@@ -45,6 +45,18 @@ class MusicVideoViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by = self.request.user)
 
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest(self, request):
+        try:
+            video = Music_video.latest_video()
+            serializer = self.get_serializer(video)
+            return Response(serializer.data)
+        except Music_video.DoesNotExist:
+            return Response(
+                {"detail": "No videos available."},
+                status=status.HTTP_404_NOT_FOUND
+            )        
+
 class BeatViewSet(viewsets.ModelViewSet):
     queryset = Beat.objects.all().order_by('-created_at')
     serializer_class = BeatSerializer
@@ -52,3 +64,15 @@ class BeatViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(created_by = self.request.user)
+
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest(self, request):
+        try:
+            beat = Beat.latest_beat()
+            serializer = self.get_serializer(beat)
+            return Response(serializer.data)
+        except Beat.DoesNotExist:
+            return Response(
+                {"detail": "No beats available."},
+                status=status.HTTP_404_NOT_FOUND
+            )        

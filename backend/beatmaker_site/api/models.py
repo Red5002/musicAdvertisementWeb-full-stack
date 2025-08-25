@@ -36,7 +36,7 @@ class Song(Model):
         verbose_name_plural = 'Songs'
         ordering =["-created_at"]
         get_latest_by = "created_at" 
-        
+
     title = models.CharField(max_length=255)
     spotify = models.URLField(blank=True)
     boomplay = models.URLField(blank=True)
@@ -60,6 +60,8 @@ class Music_video(Model):
         verbose_name = 'Video'
         verbose_name_plural = 'Videos'
         ordering = ["-created_at"]
+        get_latest_by = "created_at" 
+
     title = models.CharField(max_length=255)
     youtube_url = models.URLField(blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -67,12 +69,18 @@ class Music_video(Model):
 
     def __str__(self):
         return f"{self.title}"
+    
+    @classmethod
+    def latest_video(cls):
+        return cls.objects.latest()
 
 class Beat(Model):
     class Meta:
         verbose_name = 'Beat'
         verbose_name_plural = 'Beats'
         ordering = ["-created_at"]
+        get_latest_by = "created_at" 
+
     title = models.CharField(max_length=255)
     beat_url = models.URLField(blank=True)
     thumbnail_url = models.URLField(blank=True)
@@ -81,3 +89,7 @@ class Beat(Model):
 
     def __str__(self):
         return f"{self.title}"
+    
+    @classmethod
+    def latest_beat(cls):
+        return cls.objects.latest()

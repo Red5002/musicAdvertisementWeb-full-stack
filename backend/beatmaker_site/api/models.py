@@ -48,6 +48,9 @@ class Song(Model):
 
     def __str__(self):
         return f"{self.title}"
+    
+    def latest_song(cls):
+        return cls.objects.latest('created_at')
 
 class Music_video(Model):
     class Meta:

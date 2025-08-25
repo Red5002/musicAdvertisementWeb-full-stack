@@ -73,6 +73,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'beatmaker_site.urls'
+APPEND_SLASH = True
 
 TEMPLATES = [
     {

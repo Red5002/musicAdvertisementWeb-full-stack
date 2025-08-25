@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Song, Music_video, Beat
+from .models import *
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +18,7 @@ class MusicVideoSerializer(serializers.ModelSerializer):
         model = Music_video
         fields = '__all__'
         read_only_fields = ['created_by', 'created_at']
-        
+
 class BeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beat

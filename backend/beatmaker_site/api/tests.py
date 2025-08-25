@@ -182,3 +182,30 @@ class BeatLatestTest(BaseAPITest):
         response = self.client.get("/api/beats/latest/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+class PostLatestTest(BaseAPITest):
+    def test_latest_post_returns_most_recent(self):
+        post1 = Post.objects.create(
+            title="Old post",
+            description="hello guys",
+            post_type="song",
+            audio_url="https://example-beat.com/beat1.mp3",
+            image_url="https://example.com/cover1.jpg",
+            created_by=self.admin
+        )
+        post2 = Post.objects.create(
+            title="new post",
+            description="hello guys",
+            post_type="song",
+            audio_url="https://example-beat.com/beat2.mp3",
+            image_url="https://example.com/cover2.jpg",
+            created_by=self.admin
+        )
+       
+        response = self.client.get("/api/posts/latest/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], post2.title)
+
+    def test_latest_post_returns_404_if_none_exist(self):
+        response = self.client.get("/api/posts/latest/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+

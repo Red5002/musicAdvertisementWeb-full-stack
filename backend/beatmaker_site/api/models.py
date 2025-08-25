@@ -9,6 +9,7 @@ class Post(Model):
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'
         ordering =["-created_at"]
+        get_latest_by = "created_at" 
 
     POST_TYPES = [
     ('beat', 'Beat'),
@@ -28,7 +29,10 @@ class Post(Model):
 
     def __str__(self):
         return f"{self.title} ({self.post_type})"
-
+    
+    @classmethod
+    def latest_post(cls):
+        return cls.objects.latest()
 
 class Song(Model):
     class Meta:

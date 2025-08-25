@@ -17,6 +17,18 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by = self.request.user)
 
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest(self, request):
+        try:
+            post = Post.latest_post()
+            serializer = self.get_serializer(post)
+            return Response(serializer.data)
+        except Post.DoesNotExist:
+            return Response(
+                {"detail": "No posts available."},
+                status=status.HTTP_404_NOT_FOUND
+            )            
+
 class SongViewSet(viewsets.ModelViewSet):
     queryset = Song.objects.all().order_by('-created_at')
     serializer_class = SongSerializer

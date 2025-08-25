@@ -4,6 +4,9 @@ import api from "@/api";
 
 export default function AdminPanel() {
   const [posts, setPosts] = useState([]);
+  const [beats, setBeats] = useState([]);
+  const [musicVideos, setMusicVideos] = useState([]);
+  const [songs, setSongs] = useState([]);
   const navigate = useNavigate();
   const fetchedRef = useRef(false);
   const annoucement = "../src/assets/announcement2.svg";
@@ -16,19 +19,19 @@ export default function AdminPanel() {
       .get("/api/posts/")
       .then((res) => setPosts(res.data))
       .catch(console.error);
+    api
+      .get("/api/beats/")
+      .then((res) => setBeats(res.data))
+      .catch(console.error);
+    api
+      .get("/api/videos/")
+      .then((res) => setMusicVideos(res.data))
+      .catch(console.error);
+    api
+      .get("/api/songs/")
+      .then((res) => setSongs(res.data))
+      .catch(console.error);
   }, []);
-
-  const promotions = posts.filter((post) => post.post_type === "promo");
-
-  const music = posts.filter(
-    (post) => post.post_type === "song" && post.audio_url
-  );
-
-  const musicVideos = posts.filter(
-    (post) => post.post_type === "song" && post.video_url
-  );
-
-  const beats = posts.filter((post) => post.post_type === "beat");
 
   function handleCreate() {
     navigate("/admin/create/");
@@ -63,8 +66,8 @@ export default function AdminPanel() {
           }}
           className="p-2 bg-green-600 rounded-sm bg-no-repeat bg-contain bg-right inline-block w-64 sm:w-96 h-36 mr-5 snap-start"
         >
-          <h3 className="text-xl mb-4 sm:text-5xl text-left">Promotions</h3>
-          <p className="text-5xl text-left">{promotions.length}</p>
+          <h3 className="text-xl mb-4 sm:text-5xl text-left">Blogs</h3>
+          <p className="text-5xl text-left">{posts.length}</p>
         </div>
         <div
           style={{
@@ -72,8 +75,8 @@ export default function AdminPanel() {
           }}
           className="p-2 bg-green-600 rounded-sm bg-no-repeat bg-contain bg-right inline-block w-64 sm:w-96 h-36 mr-5 snap-start"
         >
-          <h3 className="text-xl mb-4 sm:text-5xl text-left">Promotions</h3>
-          <p className="text-5xl text-left">{promotions.length}</p>
+          <h3 className="text-xl mb-4 sm:text-5xl text-left">Beats</h3>
+          <p className="text-5xl text-left">{beats.length}</p>
         </div>
         <div
           style={{
@@ -81,8 +84,8 @@ export default function AdminPanel() {
           }}
           className="p-2 bg-green-600 rounded-sm bg-no-repeat bg-contain bg-right inline-block w-64 sm:w-96 h-36 mr-5 snap-start"
         >
-          <h3 className="text-xl mb-4 sm:text-5xl text-left">Promotions</h3>
-          <p className="text-5xl text-left">{promotions.length}</p>
+          <h3 className="text-xl mb-4 sm:text-5xl text-left">Music Videos</h3>
+          <p className="text-5xl text-left">{musicVideos.length}</p>
         </div>
         <div
           style={{
@@ -90,8 +93,8 @@ export default function AdminPanel() {
           }}
           className="p-2 bg-green-600 rounded-sm bg-no-repeat bg-contain bg-right inline-block w-64 sm:w-96 h-36 snap-start"
         >
-          <h3 className="text-xl mb-4 sm:text-5xl text-left">Promotions</h3>
-          <p className="text-5xl text-left">{promotions.length}</p>
+          <h3 className="text-xl mb-4 sm:text-5xl text-left">Songs</h3>
+          <p className="text-5xl text-left">{songs.length}</p>
         </div>
       </section>
     </div>

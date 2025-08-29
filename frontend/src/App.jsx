@@ -5,8 +5,8 @@ import AdminPanel from "./pages/admin/admin";
 import NotFound from "./pages/not found";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import ContentForm from "./components/postForm";
-import GetAllPost from "./pages/allposts";
-import GetPost from "./pages/post";
+import ContentListPage from "@/pages/admin/contentListPage";
+import { ThemeProvider } from "next-themes";
 
 function Logout() {
   localStorage.clear();
@@ -15,67 +15,59 @@ function Logout() {
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminPanel />
-              </ProtectedRoute>
-            }
-          />  
-          <Route path="/admin/posts/:id?" element={
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <BrowserRouter>
+      <Routes>
+        {/* Admin dashboard */}
+        <Route
+          path="/admin"
+          element={
             <ProtectedRoute>
-              <ContentForm resourceType="post" />
+              <AdminPanel />
             </ProtectedRoute>
-          } />
-          <Route path="/admin/posts/" element={
-            <ProtectedRoute>
-              <ContentForm resourceType="post" />
-            </ProtectedRoute>
-          } />
-           <Route path="/admin/songs/:id?" element={
-            <ProtectedRoute>
-             <ContentForm resourceType="song" />
-            </ProtectedRoute>
-           } />
-           <Route path="/admin/songs/" element={
-            <ProtectedRoute>
-             <ContentForm resourceType="song" />
-            </ProtectedRoute>
-           } />
-          <Route path="/admin/videos/:id?" element={
-            <ProtectedRoute>
-              <ContentForm resourceType="video" />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/videos/" element={
-            <ProtectedRoute>
-              <ContentForm resourceType="video" />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/beats/:id?" element={
-            <ProtectedRoute>
-              <ContentForm resourceType="beat" />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/beats/" element={
-            <ProtectedRoute>
-              <ContentForm resourceType="beat" />
-            </ProtectedRoute>
-          } />
+          }
+        />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/posts/:type" element={<GetAllPost />} />
-          <Route path="/post/:id" element={<GetPost />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+        {/* Dynamic create/edit for all resource types */}
+        <Route
+          path="/admin/create/:resourceType"
+          element={
+            <ProtectedRoute>
+              <ContentForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/edit/:resourceType/:id"
+          element={
+            <ProtectedRoute>
+              <ContentForm />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* List all items of a resource type (posts, songs, beats, videos) */}
+        <Route
+          path="/admin/:resourceType"
+          element={
+            <ProtectedRoute>
+              <ContentListPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Auth routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

@@ -1,34 +1,54 @@
-import { useState } from "react";
-import api from "@/api"; // axios instance
+// src/pages/admin/contentForm.jsx
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "@/api";
 import { resourceConfig } from "@/formConfig";
-// import { uploadToCDN } from "@/uploadToCdn";
 
-export default function ContentForm({ resourceType }) {
-  const { endpoint, fields } = resourceConfig[resourceType];
+export default function ContentForm() {
+  const { resourceType, id } = useParams(); // e.g. post, song, video, beat
+  const { endpoint, fields } = resourceConfig[resourceType]; // comes from config
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // ✅ If editing, fetch existing record
+  useEffect(() => {
+    if (id) {
+      setLoading(true);
+      api
+        .get(`${endpoint}${resourceType}/${id}/`)
+        .then((res) => setData(res.data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [id, endpoint, resourceType]);
 
   const handleChange = (name, value) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  console.log("Submitting data:", data); // 👈 should include Cloudinary URL
-
-  try {
-    await api.post(endpoint, data);
-    alert(`${resourceType} created successfully!`);
-    setData({});
-  } catch (err) {
-    console.error(err.response?.data || err);
-    alert("Error creating " + resourceType);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      if (id) {
+        // ✅ Edit mode
+        await api.put(`${resourceConfig[resourceType].endpoint}${resourceType}/${id}/`, data);
+        alert(`${resourceType} updated successfully!`);
+      } else {
+        // ✅ Create mode
+        await api.post(`${resourceConfig[resourceType].endpoint}${resourceType}/`, data);
+        alert(`${resourceType} created successfully!`);
+      }
+      navigate(`/admin/${resourceType}`); // go back to list page
+    } catch (err) {
+      console.error(err.response?.data || err);
+      alert("Error saving " + resourceType);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderField = (field) => {
     const value = data[field.name] || "";
@@ -62,43 +82,42 @@ export default function ContentForm({ resourceType }) {
           </select>
         );
 
-    case "file":
-  return (
-    <input
-      key={field.name}
-      type="file"
-      accept={field.accept || "image/*"}
-      onChange={async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      case "file":
+        return (
+          <input
+            key={field.name}
+            type="file"
+            accept={field.accept || "image/*"}
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
 
-        try {
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("upload_preset", "lvpdhl8c");
+              try {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", "lvpdhl8c");
 
-          const res = await fetch("https://api.cloudinary.com/v1_1/dv8a41bod/upload", {
-            method: "POST",
-            body: formData,
-          });
+                const res = await fetch(
+                  "https://api.cloudinary.com/v1_1/dv8a41bod/upload",
+                  {
+                    method: "POST",
+                    body: formData,
+                  }
+                );
 
-          const data = await res.json();
-          console.log("Uploaded to Cloudinary:", data);
+                const upload = await res.json();
+                handleChange(field.name, upload.secure_url);
+                alert("File upload successful ✔");
+              } catch (err) {
+                console.error("Upload failed", err);
+                alert("File upload failed");
+              }
+            }}
+            className="w-full p-2 rounded bg-gray-300 shadow-lg dark:bg-gray-700"
+          />
+        );
 
-          // ✅ Save the Cloudinary URL in your form state
-          handleChange(field.name, data.secure_url);
-        } catch (err) {
-          console.error("Upload failed", err);
-          alert("File upload failed");
-        }
-      }}
-      className="w-full p-2 rounded bg-gray-300 shadow-lg dark:bg-gray-700"
-    />
-  );
-
-
-
-      default: // text, url
+      default: // text, url, number
         return (
           <input
             key={field.name}
@@ -121,7 +140,7 @@ export default function ContentForm({ resourceType }) {
         disabled={loading}
         className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50"
       >
-        {loading ? "Saving..." : "Save"}
+        {loading ? "Saving..." : id ? "Update" : "Create"}
       </button>
     </form>
   );

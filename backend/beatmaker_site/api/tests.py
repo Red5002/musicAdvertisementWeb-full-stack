@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from api.models import Post, Song, Music_video, Beat
+from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 
 
 class BaseAPITest(APITestCase):
@@ -209,3 +212,36 @@ class PostLatestTest(BaseAPITest):
         response = self.client.get("/api/posts/latest/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+class ChartDataViewTest(APITestCase):
+    def setUp(self):
+        # Create a test user (optional if your view requires auth)
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+        # Create some content with different dates
+        today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
+
+        Post.objects.create(title="Test Post",post_type="promotion", description="desc", created_at=today, created_by=self.user)
+        Beat.objects.create(title="Test Beat", created_at=today, created_by=self.user)
+        Song.objects.create(title="Test Song", created_at=yesterday, created_by=self.user)
+        Music_video.objects.create(title="Test Video", created_at=today, created_by=self.user)
+
+    def test_chart_data_response(self):
+        url = reverse("chart-data")  # basename + -list
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Make sure response contains the right structure
+        self.assertIsInstance(response.data, list)
+        self.assertTrue(all("name" in day for day in response.data))
+        self.assertTrue(all("posts" in day for day in response.data))
+        self.assertTrue(all("beats" in day for day in response.data))
+        self.assertTrue(all("songs" in day for day in response.data))
+        self.assertTrue(all("videos" in day for day in response.data))
+
+        # Optional: Check at least one day has non-zero data
+        total_posts = sum(d["posts"] for d in response.data)
+        self.assertGreater(total_posts, 0)

@@ -1,5 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from .views import *
+from django.urls import path
 
 router = DefaultRouter()
 router.register('posts', PostViewSet)
@@ -8,4 +9,8 @@ router.register('songs', SongViewSet)
 router.register('beats', BeatViewSet)
 
 
-urlpatterns = router.urls
+urlpatterns = [
+    path("chart-data/", chart_data, name="chart-data"),
+]
+
+urlpatterns += router.urls

@@ -1,7 +1,8 @@
 // src/formConfig.js
 export const resourceConfig = {
-  post: {
-    endpoint: "/api/posts/",
+  posts: {
+    endpoint: "/api/",
+    label: "Posts",
     fields: [
       { name: "title", type: "text", label: "Title" },
       { name: "description", type: "textarea", label: "Description" },
@@ -14,16 +15,18 @@ export const resourceConfig = {
           { value: "song", label: "Song" },
           { value: "video", label: "Video" },
           { value: "promotion", label: "Promotion" },
-          { value: "annoucement", label: "Announcement" },
+          { value: "announcement", label: "Announcement" },
         ],
       },
       { name: "audio_url", type: "url", label: "Audio Link" },
       { name: "video_url", type: "url", label: "Video Link" },
-      { name: "image_url", type: "file", label: "Image Link" },
+      { name: "image_url", type: "file", label: "Image Upload" },
     ],
   },
-  song: {
-    endpoint: "/api/songs/",
+
+  songs: {
+    endpoint: "/api/",
+    label: "Songs",
     fields: [
       { name: "title", type: "text", label: "Title" },
       { name: "spotify", type: "url", label: "Spotify Link" },
@@ -31,19 +34,23 @@ export const resourceConfig = {
       { name: "deezer", type: "url", label: "Deezer Link" },
       { name: "youtube_music", type: "url", label: "YouTube Music Link" },
       { name: "apple_music", type: "url", label: "Apple Music Link" },
-      { name: "audio_mack", type: "url", label: "Audiomack Link" },
+      { name: "audiomack", type: "url", label: "Audiomack Link" },
       { name: "cover_img", type: "file", label: "Cover Image" },
     ],
   },
-  video: {
-    endpoint: "/api/videos/",
+
+  videos: {
+    endpoint: "/api/",
+    label: "Videos",
     fields: [
       { name: "title", type: "text", label: "Title" },
       { name: "youtube_url", type: "url", label: "YouTube URL" },
     ],
   },
-  beat: {
-    endpoint: "/api/beats/",
+
+  beats: {
+    endpoint: "/api/",
+    label: "Beats",
     fields: [
       { name: "title", type: "text", label: "Title" },
       { name: "beat_url", type: "url", label: "Beat URL" },
